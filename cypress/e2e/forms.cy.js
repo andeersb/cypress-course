@@ -1,0 +1,25 @@
+describe('form tests', () => {
+    beforeEach(() => {
+        cy.visit ('/forms')
+    })
+    it('Test subscribe form', () => {
+        cy.contains(/Testing forms/i)
+        cy.getDataTest('subscribe-form').find('input').as('subscribe-input')
+        cy.get('@subscribe-input').type('user@email.com')
+        cy.contains(/Successfully subbed: user@email.com!/i).should('not.exist')
+        cy.getDataTest('subscribe-button').click()
+        cy.contains(/Successfully subbed: user@email.com!/i).should('exist')
+        cy.wait(3000)
+        cy.contains(/Successfully subbed: user@email.com!/i).should('not.exist')
+        cy.get('@subscribe-input').type('user@email.br')
+        cy.contains(/Invalid email: user@email.br/i).should(`not.exist`)
+        cy.getDataTest('subscribe-button').click()
+        cy.contains(/Invalid email: user@email.br/i).should(`exist`)
+        cy.wait(3000)
+        cy.contains(/Invalid email:user@email.br/i).should('not.exist')
+        cy.contains(/fail!/i).should('not.exist')
+        cy.getDataTest('subscribe-button').click()
+        cy.contains(/fail!/i).should('exist')
+
+    })
+})
