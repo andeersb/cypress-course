@@ -20,5 +20,47 @@ describe('Various Examples', () =>{
         
      
     })
+    it ('intercepts', () =>{
+        cy.intercept("POST", 'http://localhost:3000/examples', {
+           fixture: 'example.json'
+        })
+        cy.getDataTest('post-button').click()
+    })
+    it.only('grudges list',() =>{
+        cy.contains(/Add some Grudges/i)
+        cy.getDataTest('grudge-list').within(()=>{
+            cy.get('li').should('have.length', 0)
+            })
+        cy.getDataTest('grudge-input').within(() =>{
+            cy.get('input').type('test grudge')
+        })
+        cy.getDataTest('grudge-button').click()
+        cy.getDataTest('grudge-list').within(()=>{
+            cy.get('li').should('have.length', 1)
+        })
+        cy.getDataTest('grudge-input').within(() =>{
+            cy.get('input').type('test grudges')
+        })
+        cy.getDataTest('grudge-button').click()
+        cy.getDataTest('grudge-list').within(()=>{
+            cy.get('li').should('have.length', 2)
+            cy.get('li').its(0).should('contains.text', 'test grudge')
+            cy.get('li').its(1).should('contains.text', 'test grudges')
+        })
+        cy.getDataTest('grudge-list').within(()=>{
+            cy.get('li').its(0).within(() =>{
+                cy.getDataTest('delete').click()
+            })
+        
+        })
+        cy.getDataTest('grudge-list').within(()=>{
+            cy.get('li').should('have.length', 1)
+        })
+        cy.getDataTest('delete').click()
+        cy.getDataTest('grudge-list').within(()=>{
+            cy.get('li').should('have.length', 0)
+        })
+    })
 
+    
 }) 
